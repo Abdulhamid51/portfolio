@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load newsroom %}
+
+{% block title %}{{ profile.full_name }} — {{ profile.headline }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  {% include "partials/slider.html" %}
+
+  <div class="frontpage">
+
+    <article class="frontpage__main">
+      <h1 class="headline">{{ profile.tagline|default:profile.headline|default:"Salom, xush kelibsiz." }}</h1>
+
+      <div class="byline">
+        <span>{{ profile.full_name }}</span>
+        {% if profile.location %}<span>{{ profile.location }}</span>{% endif %}
+        {% if profile.available_for_work %}<span class="stamp">Ish takliflariga ochiq</span>{% endif %}
+        {% if can_edit %}<a class="edit-chip" href="{% url 'manage:profile' %}">Tahrirlash</a>{% endif %}
+      </div>
+
+      {% if profile.about %}
+        <div class="prose columns-2 dropcap">{{ profile.about|richtext }}</div>
+      {% else %}
+        <div class="empty-state">
+          <p>Bu yerda “Men haqimda” matni turadi.</p>
+          {% if can_edit %}<a class="btn btn--primary" href="{% url 'manage:profile' %}">Matnni yozish</a>{% endif %}
+        </div>
+      {% endif %}
+
+      <div class="ticker">
+        <span><b>{{ project_count }}</b> loyiha</span>
+        <span><b>{{ folders|length }}</b> papka</span>
+        {% if experiences %}<span><b>{{ experiences|length }}</b> ish o'rni</span>{% endif %}
+        <span>Rezyume: <b><a href="{% url 'core:resume' %}">to'liq ko'rish</a></b></span>
+      </div>
+
+      {% if articles or can_edit %}
+      <section style="margin-bottom:3rem">
+        <div class="section-head">
+          <h2>So'nggi maqolalar</h2>
+          <span class="meta">
+            <a href="{% url 'blog:index' %}">Barchasi →</a>
+            {% if can_edit %} · <a class="edit-chip" href="{% url 'manage:article_create' %}">+ Maqola</a>{% endif %}
+          </span>
+        </div>
+        {% if articles %}
+          <div class="teaser-list">
+            {% for article in articles %}
+              <a class="teaser" href="{{ article.get_absolute_url }}">
+                <div class="teaser__thumb">
+                  {% if article.cover %}<img src="{{ article.cover.url }}" alt="{{ article.title }}">{% endif %}
+                </div>
+                <div>
+                  <p class="kicker">{{ article.rubric|default:"Maqola" }} · {{ article.published_at|uzdate }}</p>
+                  <h3>{{ article.title }}</h3>
+                  <p>{{ article.lead|truncatechars:110 }}</p>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <p>Hali maqola yo'q.</p>
+            <a class="btn btn--primary" href="{% url 'manage:article_create' %}">Maqola yozish</a>
+          </div>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      <section>
+        <div class="section-head">
+          <h2>Tanlangan ishlar</h2>
+          <span class="meta">
+            <a href="{% url 'portfolio:index' %}">Barchasi →</a>
+            {% if can_edit %} · <a class="edit-chip" href="{% url 'manage:project_create' %}">+ Loyiha</a>{% endif %}
+          </span>
+        </div>
+
+        {% with shown=featured_projects|default:latest_projects %}
+        {% if shown %}
+          <div class="teaser-list">
+            {% for project in shown %}
+              <a class="teaser" href="{{ project.get_absolute_url }}">
+                <div class="teaser__thumb">
+                  {% if project.cover %}<img src="{{ project.cover.url }}" alt="{{ project.title }}">{% endif %}
+                </div>
+                <div>
+                  <p class="kicker">{{ project.folder.name|default:"Loyiha" }}{% if project.year %} · {{ project.year }}{% endif %}</p>
+                  <h3>{{ project.title }}</h3>
+                  <p>{{ project.summary }}</p>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <p>Hali loyiha qo'shilmagan.</p>
+            {% if can_edit %}<a class="btn btn--primary" href="{% url 'manage:project_create' %}">Birinchi loyihani qo'shish</a>{% endif %}
+          </div>
+        {% endif %}
+        {% endwith %}
+      </section>
+    </article>
+
+    <aside class="frontpage__aside stack" style="--stack-gap:2rem">
+      {% if profile.photo %}
+        <figure class="portrait" style="margin:0">
+          <img src="{{ profile.photo.url }}" alt="{{ profile.full_name }}">
+          <figcaption>{{ profile.full_name }}{% if profile.headline %} · {{ profile.headline }}{% endif %}</figcaption>
+        </figure>
+      {% endif %}
+
+      <div class="factbox">
+        <p class="kicker">Qisqacha ma'lumot</p>
+        <dl>
+          {% if profile.email %}<dt>Pochta</dt><dd><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></dd>{% endif %}
+          {% if profile.phone %}<dt>Telefon</dt><dd><a href="tel:{{ profile.phone }}">{{ profile.phone }}</a></dd>{% endif %}
+          {% if profile.location %}<dt>Manzil</dt><dd>{{ profile.location }}</dd>{% endif %}
+          {% if profile.website %}<dt>Sayt</dt><dd><a href="{{ profile.website }}" target="_blank" rel="noopener">{{ profile.website }}</a></dd>{% endif %}
+          {% for link in social_links %}<dt>{{ link.label }}</dt><dd><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.handle|default:link.url }}</a></dd>{% endfor %}
+        </dl>
+        {% if profile.resume_file %}
+          <p style="margin-top:1rem"><a class="btn btn--sm" href="{{ profile.resume_file.url }}" download>Rezyumeni yuklab olish</a></p>
+        {% endif %}
+      </div>
+
+      {% if skill_groups %}
+      <div>
+        <p class="kicker">Nimalar bilan ishlayman</p>
+        {% for group in skill_groups %}
+          <div class="skill-group">
+            <h3>{{ group.name }}</h3>
+            <ul class="skill-list">
+              {% for skill in group.skills.all %}<li class="tag">{{ skill.name }}</li>{% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if folders %}
+      <div>
+        <p class="kicker">Papkalar</p>
+        <ul class="leaders">
+          {% for folder in folders %}
+            <li><a href="{{ folder.get_absolute_url }}" style="text-decoration:none">{{ folder.name }}</a>
+                <span>{{ folder.projects.count }} ta</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if experiences %}
+      <div>
+        <p class="kicker">Oxirgi ish o'rinlari</p>
+        <ul class="leaders">
+          {% for exp in experiences %}
+            <li><span>{{ exp.role }}, {{ exp.company }}</span><span>{{ exp.start_date.year }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </aside>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+<a class="file-row" href="{{ project.get_absolute_url }}">
+  <span class="file-row__num">{{ forloop.counter|stringformat:"02d" }}</span>
+  <div>
+    <h3>{{ project.title }}</h3>
+    {% if project.summary %}<p>{{ project.summary }}</p>{% endif %}
+    {% if project.tech_list %}
+      <div class="tag-row" style="margin-top:.55rem">
+        {% for tech in project.tech_list %}<span class="tag">{{ tech }}</span>{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  <div class="file-row__side">
+    {% if project.year %}<span class="meta">{{ project.year }}</span>{% endif %}
+    {% if not project.is_published %}<span class="stamp">Qoralama</span>{% endif %}
+    {% if project.status != "done" %}<span class="stamp stamp--muted">{{ project.get_status_display }}</span>{% endif %}
+  </div>
+</a>

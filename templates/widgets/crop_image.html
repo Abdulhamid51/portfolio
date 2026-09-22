@@ -1,0 +1,34 @@
+<div class="imagefield" data-crop data-ratio="{{ widget.ratio }}"
+     data-ratio-label="{{ widget.ratio_label }}" data-max-width="{{ widget.max_width }}">
+
+  {% if widget.is_initial %}
+    <div class="imagefield__current">
+      <img src="{{ widget.value.url }}" alt="">
+      <div class="imagefield__meta">
+        <span class="imagefield__name">{{ widget.value }}</span>
+        <button type="button" class="btn btn--sm btn--ghost" data-recrop
+                data-src="{{ widget.value.url }}">Qayta kesish</button>
+        {% if not widget.required %}
+          <label class="imagefield__clear">
+            <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}">
+            O'chirish
+          </label>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <input type="file" name="{{ widget.name }}" accept="image/*"{% include "django/forms/widgets/attrs.html" %}>
+
+  <div class="imagefield__result" hidden data-result>
+    <img alt="" data-result-img>
+    <div class="imagefield__meta">
+      <span data-result-note>Kesildi</span>
+      <button type="button" class="btn btn--sm btn--ghost" data-result-edit>O'zgartirish</button>
+    </div>
+  </div>
+
+  <p class="imagefield__hint">
+    Tavsiya etilgan nisbat: <b>{{ widget.ratio_label }}</b> — rasm tanlangach kesish oynasi ochiladi.
+  </p>
+</div>

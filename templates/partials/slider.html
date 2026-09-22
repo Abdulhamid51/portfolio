@@ -1,0 +1,52 @@
+{% if slides %}
+<section class="slider" data-slider aria-roledescription="slayder" aria-label="Tanlangan ishlar">
+  <div class="slider__track" data-slider-track>
+    {% for slide in slides %}
+      <article class="slide slide--{{ slide.side }}" data-slide
+               style="--panel-blur:{{ slide.panel_blur }}px; --image-blur:{{ slide.image_blur }}px; --blur-width:{{ slide.blur_width }}%"
+               aria-label="{{ forloop.counter }} / {{ slides|length }}">
+        <div class="slide__media">
+          <img class="slide__img" src="{{ slide.image.url }}" alt="{{ slide.title }}"
+               {% if not forloop.first %}loading="lazy"{% endif %}>
+          {% if slide.image_blur %}
+            <img class="slide__img slide__img--blur" src="{{ slide.image.url }}" alt="" aria-hidden="true">
+          {% endif %}
+        </div>
+        <div class="slide__panel slide__panel--{{ slide.panel_style }}">
+          <h2 class="slide__title">{{ slide.title }}</h2>
+          {% if slide.subtitle %}<p class="slide__text">{{ slide.subtitle }}</p>{% endif %}
+          <div class="slide__actions">
+            {% if slide.url %}
+              <a class="btn btn--sm btn--primary" href="{{ slide.url }}">{{ slide.link_label|default:"Batafsil" }}</a>
+            {% endif %}
+            {% if can_edit %}
+              <a class="edit-chip" href="{% url 'manage:section_update' 'slayd' slide.pk %}">Tahrir</a>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  {% if slides|length > 1 %}
+    <button type="button" class="slider__nav slider__nav--prev" data-slider-prev aria-label="Oldingi">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M14.5 5 7.5 12l7 7" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button type="button" class="slider__nav slider__nav--next" data-slider-next aria-label="Keyingi">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M9.5 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="slider__dots" data-slider-dots></div>
+  {% endif %}
+</section>
+{% elif can_edit %}
+<div class="empty-state" style="margin-top:2rem">
+  <p>Bosh sahifa slayderi bo'sh. Rasm, sarlavha va havoladan iborat slayd qo'shing.</p>
+  <a class="btn btn--primary" href="{% url 'manage:section_create' 'slayd' %}">+ Slayd qo'shish</a>
+</div>
+{% endif %}

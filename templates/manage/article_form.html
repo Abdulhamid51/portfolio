@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} — Boshqaruv{% endblock %}
+{% block extra_css %}{{ form.media.css }}{% endblock %}
+
+{% block content %}
+<div class="page form-page" style="max-width:960px">
+  <div class="page-head" style="padding-bottom:1.25rem">
+    <div>
+      <p class="kicker kicker--accent">Maqola</p>
+      <h1>{{ page_title }}</h1>
+      <p>Matnni quyidagi muharrirda yozing: sarlavhalar, ro'yxatlar, iqtiboslar, kod va rasmlar.</p>
+    </div>
+    <div class="page-head__actions">
+      {% if article %}<a class="btn btn--sm btn--ghost" href="{{ article.get_absolute_url }}">Sahifani ko'rish</a>{% endif %}
+      <a class="btn btn--sm btn--ghost" href="{% url 'blog:index' %}">Maqolalar</a>
+    </div>
+  </div>
+
+  <form class="form-card" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="flash flash--error">{{ form.non_field_errors }}</div>{% endif %}
+
+    <div class="form-grid">
+      {% with field=form.title %}{% include "partials/field.html" %}{% endwith %}
+      {% with field=form.rubric %}{% include "partials/field.html" %}{% endwith %}
+    </div>
+    {% with field=form.lead %}{% include "partials/field.html" %}{% endwith %}
+    <div class="form-grid">
+      {% with field=form.cover %}{% include "partials/field.html" %}{% endwith %}
+      {% with field=form.cover_caption %}{% include "partials/field.html" %}{% endwith %}
+    </div>
+
+    <p class="fieldset-title">Matn</p>
+    {% with field=form.body %}{% include "partials/field.html" with hide_label=1 %}{% endwith %}
+
+    <p class="fieldset-title">Sozlamalar</p>
+    <div class="form-grid">
+      {% with field=form.published_at %}{% include "partials/field.html" %}{% endwith %}
+      {% with field=form.slug %}{% include "partials/field.html" %}{% endwith %}
+    </div>
+    {% with field=form.is_published %}{% include "partials/field.html" %}{% endwith %}
+    {% with field=form.is_featured %}{% include "partials/field.html" %}{% endwith %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">Saqlash</button>
+      <a class="btn btn--ghost" href="{{ cancel_url }}">Bekor qilish</a>
+      {% if delete_url %}<a class="btn btn--danger spacer" href="{{ delete_url }}">O'chirish</a>{% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}{{ form.media.js }}{% endblock %}

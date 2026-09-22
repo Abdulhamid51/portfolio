@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio — {{ profile.full_name }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <p class="kicker kicker--accent">Arxiv</p>
+      <h1>Portfolio</h1>
+      <p>Ishlar papkalar bo'yicha saqlanadi. Papkani oching — ichidagi loyihalar ro'yxati chiqadi.</p>
+    </div>
+    <div class="page-head__actions">
+      <span class="meta">{{ total }} ta loyiha</span>
+      {% if can_edit %}
+        <a class="btn btn--sm" href="{% url 'manage:folder_create' %}">+ Papka</a>
+        <a class="btn btn--sm btn--primary" href="{% url 'manage:project_create' %}">+ Loyiha</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="folder-grid">
+    {% for folder in folders %}
+      <a class="folder tone-{{ folder.tone }}" href="{{ folder.get_absolute_url }}">
+        <div class="folder__shape">
+          <div class="folder__back"></div>
+          <div class="folder__paper folder__paper--1"></div>
+          <div class="folder__paper folder__paper--2"></div>
+          <div class="folder__front">
+            {% if folder.cover %}<div class="folder__cover"><img src="{{ folder.cover.url }}" alt=""></div>{% endif %}
+            <span class="folder__count">{{ folder.project_count }} ta</span>
+            <h3 class="folder__name">{{ folder.name }}</h3>
+            {% if folder.description %}<p class="folder__desc">{{ folder.description }}</p>{% endif %}
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      {% if not can_edit %}
+        <div class="empty-state" style="grid-column:1/-1">
+          <p>Hali papka yaratilmagan.</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {% if can_edit %}
+      <a class="folder folder--new" href="{% url 'manage:folder_create' %}">
+        <div class="folder__shape">
+          <div class="folder__back"></div>
+          <div class="folder__front">
+            <div>
+              <h3 class="folder__name" style="color:var(--ink-3)">+ Yangi papka</h3>
+              <p class="folder__desc">Loyihalarni turkumlash uchun</p>
+            </div>
+          </div>
+        </div>
+      </a>
+    {% endif %}
+  </div>
+
+  {% if loose_projects %}
+    <section style="margin-top:4rem">
+      <div class="section-head">
+        <h2>Papkasiz loyihalar</h2>
+        <span class="meta">{{ loose_projects|length }} ta</span>
+      </div>
+      <div class="filelist">
+        {% for project in loose_projects %}
+          {% include "portfolio/_file_row.html" %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load newsroom %}
+
+{% block title %}{{ article.title }} — {{ profile.display_masthead }}{% endblock %}
+{% block description %}{{ article.lead }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <nav class="breadcrumb">
+    <a href="{% url 'blog:index' %}">Maqolalar</a> <span>/</span> <span>{{ article.title }}</span>
+  </nav>
+
+  <article class="article">
+    <header class="article__head">
+      <p class="kicker kicker--accent">{{ article.rubric|default:"Maqola" }}</p>
+      <h1 class="article__title">{{ article.title }}</h1>
+      {% if article.lead %}<p class="lede">{{ article.lead }}</p>{% endif %}
+      <div class="article__meta">
+        <span>{{ article.published_at|uzdate }}</span>
+        <span>{{ article.reading_minutes }} daqiqa o'qish</span>
+        {% if not article.is_published %}<span class="stamp">Qoralama</span>{% endif %}
+        {% if can_edit %}<a class="edit-chip" href="{% url 'manage:article_update' article.pk %}">Tahrirlash</a>{% endif %}
+      </div>
+    </header>
+
+    {% if article.cover %}
+      <figure class="article__cover">
+        <img src="{{ article.cover.url }}" alt="{{ article.title }}">
+        {% if article.cover_caption %}<figcaption>{{ article.cover_caption }}</figcaption>{% endif %}
+      </figure>
+    {% endif %}
+
+    {% if article.body %}
+      <div class="prose">{{ article.body|richtext }}</div>
+    {% else %}
+      <div class="prose">
+        <div class="empty-state">
+          <p>Maqola matni hali yozilmagan.</p>
+          {% if can_edit %}<a class="btn btn--primary" href="{% url 'manage:article_update' article.pk %}">Matn yozish</a>{% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="article__sign">
+      <span>{{ profile.full_name }}</span>
+      {% if profile.email %}<a href="mailto:{{ profile.email }}">{{ profile.email }}</a>{% endif %}
+    </div>
+  </article>
+
+  {% if others %}
+    <section style="margin-top:4rem">
+      <div class="section-head">
+        <h2>Boshqa maqolalar</h2>
+        <span class="meta"><a href="{% url 'blog:index' %}">Barchasi →</a></span>
+      </div>
+      <div class="article-grid">
+        {% for article in others %}
+          <a class="article-card" href="{{ article.get_absolute_url }}">
+            {% if article.cover %}<div class="article-card__media"><img src="{{ article.cover.url }}" alt=""></div>{% endif %}
+            <p class="kicker">{{ article.rubric|default:"Maqola" }}</p>
+            <h3>{{ article.title }}</h3>
+            <p class="meta">{{ article.published_at|uzdate }}</p>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}So'rov noto'g'ri — {{ profile.display_masthead }}{% endblock %}
+
+{% block content %}
+<div class="page page--narrow">
+  <div class="error-page">
+    <p class="error-page__code">400</p>
+    <h1>So'rovni tushunib bo'lmadi</h1>
+    <p>Yuborilgan ma'lumot noto'g'ri ko'rinishda kelgan.</p>
+    <div class="error-page__actions">
+      <a class="btn btn--primary" href="{% url 'core:home' %}">Bosh sahifa</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

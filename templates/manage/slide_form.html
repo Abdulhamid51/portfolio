@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} — Boshqaruv{% endblock %}
+{% block extra_css %}{{ form.media.css }}{% endblock %}
+
+{% block content %}
+<div class="page form-page" style="max-width:900px">
+  <div class="page-head" style="padding-bottom:1.25rem">
+    <div>
+      <p class="kicker kicker--accent">Bosh sahifa</p>
+      <h1>{{ page_title }}</h1>
+      <p>Rasm, sarlavha va havola qo'shing; pastdagi sozlamalar bilan kartaning
+         shaffofligi va rasmning xiralashuvini o'zingizga moslang.</p>
+    </div>
+    <div class="page-head__actions">
+      <a class="btn btn--sm btn--ghost" href="{% url 'core:home' %}">Bosh sahifa</a>
+      <a class="btn btn--sm btn--ghost" href="{% url 'manage:dashboard' %}">Boshqaruv paneli</a>
+    </div>
+  </div>
+
+  <form class="form-card" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="flash flash--error">{{ form.non_field_errors }}</div>{% endif %}
+
+    {% with field=form.title %}{% include "partials/field.html" %}{% endwith %}
+    {% with field=form.subtitle %}{% include "partials/field.html" %}{% endwith %}
+    {% with field=form.image %}{% include "partials/field.html" %}{% endwith %}
+    <div class="form-grid">
+      {% with field=form.url %}{% include "partials/field.html" %}{% endwith %}
+      {% with field=form.link_label %}{% include "partials/field.html" %}{% endwith %}
+    </div>
+
+    <p class="fieldset-title">Ko'rinish</p>
+
+    <div class="slide-preview" data-slide-preview
+         data-current="{% if object.image %}{{ object.image.url }}{% endif %}">
+      <article class="slide slide--left" data-preview-slide>
+        <div class="slide__media">
+          <img class="slide__img" data-preview-img alt="">
+          <img class="slide__img slide__img--blur" data-preview-blur alt="" aria-hidden="true">
+          <p class="slide-preview__empty" data-preview-empty>Rasm tanlang — shu yerda ko'rinadi</p>
+        </div>
+        <div class="slide__panel slide__panel--glass" data-preview-panel>
+          <h2 class="slide__title" data-preview-title>Sarlavha</h2>
+          <p class="slide__text" data-preview-text></p>
+          <div class="slide__actions">
+            <span class="btn btn--sm btn--primary" data-preview-link>Batafsil</span>
+          </div>
+        </div>
+      </article>
+      <p class="slide-preview__note">Jonli ko'rinish — sozlamalarni o'zgartirsangiz shu yerda darhol aks etadi.</p>
+    </div>
+
+    <div class="form-grid">
+      {% with field=form.side %}{% include "partials/field.html" %}{% endwith %}
+      {% with field=form.panel_style %}{% include "partials/field.html" %}{% endwith %}
+    </div>
+    {% with field=form.panel_blur %}{% include "partials/field.html" %}{% endwith %}
+    {% with field=form.image_blur %}{% include "partials/field.html" %}{% endwith %}
+    {% with field=form.blur_width %}{% include "partials/field.html" %}{% endwith %}
+
+    <p class="fieldset-title">Sozlamalar</p>
+    <div class="form-grid">
+      {% with field=form.order %}{% include "partials/field.html" %}{% endwith %}
+    </div>
+    {% with field=form.is_active %}{% include "partials/field.html" %}{% endwith %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">Saqlash</button>
+      <a class="btn btn--ghost" href="{{ cancel_url }}">Bekor qilish</a>
+      {% if delete_url %}<a class="btn btn--danger spacer" href="{{ delete_url }}">O'chirish</a>{% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}{{ form.media.js }}<script src="{% static 'js/slide-preview.js' %}"></script>{% endblock %}

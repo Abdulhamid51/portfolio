@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} — Boshqaruv{% endblock %}
+{% block extra_css %}{{ form.media.css }}{% endblock %}
+
+{% block content %}
+<div class="page form-page">
+  <div class="page-head" style="padding-bottom:1.25rem">
+    <div>
+      <p class="kicker kicker--accent">Tahrirlash</p>
+      <h1>{{ page_title }}</h1>
+      {% if page_note %}<p>{{ page_note }}</p>{% endif %}
+    </div>
+    <div class="page-head__actions">
+      <a class="btn btn--sm btn--ghost" href="{% url 'manage:dashboard' %}">Boshqaruv paneli</a>
+    </div>
+  </div>
+
+  <form class="form-card" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="flash flash--error">{{ form.non_field_errors }}</div>{% endif %}
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    {% for field in form.visible_fields %}
+      {% include "partials/field.html" %}
+    {% endfor %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">Saqlash</button>
+      <a class="btn btn--ghost" href="{{ cancel_url|default:'/manage/' }}">Bekor qilish</a>
+      {% if delete_url %}<a class="btn btn--danger spacer" href="{{ delete_url }}">O'chirish</a>{% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}{{ form.media.js }}{% endblock %}

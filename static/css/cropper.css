@@ -1,0 +1,175 @@
+/* Rasm maydoni va kesish oynasi */
+
+.imagefield { display: grid; gap: .6rem; }
+.imagefield__hint { font-size: .8rem; color: var(--ink-3); margin: 0; }
+.imagefield__hint b { color: var(--ink-2); }
+
+.imagefield__current,
+.imagefield__result {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  padding: .6rem;
+  border-radius: var(--radius);
+}
+.imagefield__current img,
+.imagefield__result img {
+  width: 92px;
+  height: 64px;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  background: var(--paper-3);
+  flex: none;
+}
+.imagefield__meta {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  font-family: var(--font-ui);
+  font-size: .78rem;
+  color: var(--ink-3);
+  min-width: 0;
+}
+.imagefield__name { overflow-wrap: anywhere; }
+.imagefield__clear { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; }
+.imagefield__clear input { accent-color: var(--accent); }
+.imagefield__result { border-style: solid; border-color: var(--rule-strong); }
+
+/* --- Kesish oynasi --- */
+.cropper {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(20, 16, 10, .62);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  padding: clamp(.75rem, 3vw, 2rem);
+  overscroll-behavior: contain;
+}
+.cropper[hidden] { display: none; }
+
+.cropper__box {
+  width: min(780px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-strong);
+  border-top: 3px solid var(--ink);
+  box-shadow: var(--shadow-lift);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  display: grid;
+  gap: 1rem;
+}
+
+.cropper__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: .6rem;
+}
+.cropper__head strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.cropper__hint {
+  font-family: var(--font-ui);
+  font-size: .7rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.cropper__stage { display: grid; place-items: center; }
+.cropper__frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-3);
+  border: 1px solid var(--rule-strong);
+  box-shadow: 0 0 0 1px var(--paper-2) inset;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.cropper__frame.is-dragging { cursor: grabbing; }
+.cropper__frame img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+/* uchdan bir chiziqlari */
+.cropper__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, transparent 33.3%, rgba(255,255,255,.35) 33.3%, rgba(255,255,255,.35) calc(33.3% + 1px), transparent calc(33.3% + 1px),
+      transparent 66.6%, rgba(255,255,255,.35) 66.6%, rgba(255,255,255,.35) calc(66.6% + 1px), transparent calc(66.6% + 1px)),
+    linear-gradient(to bottom, transparent 33.3%, rgba(255,255,255,.35) 33.3%, rgba(255,255,255,.35) calc(33.3% + 1px), transparent calc(33.3% + 1px),
+      transparent 66.6%, rgba(255,255,255,.35) 66.6%, rgba(255,255,255,.35) calc(66.6% + 1px), transparent calc(66.6% + 1px));
+}
+
+.cropper__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+}
+.cropper__ratios { display: flex; flex-wrap: wrap; gap: .4rem; }
+.cropper__ratio {
+  font-family: var(--font-ui);
+  font-size: .7rem;
+  letter-spacing: .06em;
+  padding: .3rem .6rem;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper);
+  color: var(--ink-2);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.cropper__ratio:hover { border-color: var(--ink); color: var(--ink); }
+.cropper__ratio[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+.cropper__zoom {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-family: var(--font-ui);
+  font-size: .7rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.cropper__zoom input { width: clamp(120px, 26vw, 200px); accent-color: var(--accent); }
+
+.cropper__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+}
+.cropper__cancel { margin-left: auto; }
+
+@media (max-width: 560px) {
+  .cropper__box { padding: .9rem; gap: .8rem; }
+  .cropper__head { flex-direction: column; gap: .2rem; align-items: flex-start; }
+  .cropper__tools { flex-direction: column; align-items: stretch; }
+  .cropper__zoom { justify-content: space-between; }
+  .cropper__zoom input { width: 60%; }
+  .cropper__actions { flex-direction: column; }
+  .cropper__actions .btn { justify-content: center; }
+  .cropper__cancel { margin-left: 0; }
+  .imagefield__current, .imagefield__result { flex-wrap: wrap; }
+}

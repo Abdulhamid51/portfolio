@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Shakl eskirgan — {{ profile.display_masthead }}{% endblock %}
+
+{% block content %}
+<div class="page page--narrow">
+  <div class="error-page">
+    <p class="error-page__code">403</p>
+    <h1>Shaklning amal qilish muddati tugagan</h1>
+    <p>Sahifa uzoq ochiq turgani uchun himoya kaliti eskirdi. Sahifani yangilab,
+       ma'lumotni qaytadan yuboring.</p>
+    <div class="error-page__actions">
+      <a class="btn btn--primary" href="{% url 'core:home' %}">Bosh sahifa</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

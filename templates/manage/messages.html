@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Xabarlar — Boshqaruv{% endblock %}
+
+{% block content %}
+<div class="page page--narrow">
+  <div class="page-head">
+    <div>
+      <p class="kicker kicker--accent">Aloqa</p>
+      <h1>Kelgan xabarlar</h1>
+    </div>
+    <div class="page-head__actions">
+      <a class="btn btn--sm btn--ghost" href="{% url 'manage:dashboard' %}">Boshqaruv paneli</a>
+    </div>
+  </div>
+
+  <div class="stack" style="--stack-gap:1rem">
+    {% for letter in letters %}
+      <article class="panel">
+        <h2 style="font-size:1.05rem">
+          <span>{{ letter.subject|default:"(mavzusiz)" }}</span>
+          <span class="meta">{{ letter.created_at|date:"d.m.Y H:i" }}</span>
+        </h2>
+        <p class="meta" style="margin:.6rem 0">
+          {{ letter.name }} ·
+          {% if letter.contact_href %}
+            <a href="{{ letter.contact_href }}" rel="noopener noreferrer">{{ letter.contact }}</a>
+          {% else %}{{ letter.contact }}{% endif %}
+          {% if not letter.is_read %} · <span class="stamp">yangi</span>{% endif %}
+        </p>
+        <p style="white-space:pre-line">{{ letter.body }}</p>
+        <div class="panel-actions">
+          <form method="post" action="{% url 'manage:message_toggle' letter.pk %}">{% csrf_token %}
+            <button class="btn btn--sm btn--ghost" type="submit">{% if letter.is_read %}O'qilmagan deb belgilash{% else %}O'qilgan deb belgilash{% endif %}</button>
+          </form>
+          <form method="post" action="{% url 'manage:message_delete' letter.pk %}" data-confirm="Xabar o'chirilsinmi?">{% csrf_token %}
+            <button class="btn btn--sm btn--danger" type="submit">O'chirish</button>
+          </form>
+        </div>
+      </article>
+    {% empty %}
+      <div class="empty-state"><p>Hali xabar kelmagan.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ folder.name }} — Portfolio{% endblock %}
+
+{% block content %}
+<div class="page">
+  <nav class="breadcrumb">
+    <a href="{% url 'portfolio:index' %}">Portfolio</a> <span>/</span> <span>{{ folder.name }}</span>
+  </nav>
+
+  <div class="page-head">
+    <div>
+      <p class="kicker kicker--accent">Papka</p>
+      <h1>{{ folder.name }}</h1>
+      {% if folder.description %}<p>{{ folder.description }}</p>{% endif %}
+    </div>
+    <div class="page-head__actions">
+      <span class="meta">{{ projects|length }} ta yozuv</span>
+      {% if can_edit %}
+        <a class="btn btn--sm" href="{% url 'manage:folder_update' folder.pk %}">Papkani tahrirlash</a>
+        <a class="btn btn--sm btn--primary" href="{% url 'manage:project_create' %}?papka={{ folder.slug }}">+ Loyiha</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="filelist">
+    {% for project in projects %}
+      {% include "portfolio/_file_row.html" %}
+    {% empty %}
+      <div class="empty-state">
+        <p>Bu papka hozircha bo'sh.</p>
+        {% if can_edit %}<a class="btn btn--primary" href="{% url 'manage:project_create' %}?papka={{ folder.slug }}">Loyiha qo'shish</a>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if folders|length > 1 %}
+  <section style="margin-top:3.5rem">
+    <p class="kicker">Boshqa papkalar</p>
+    <div class="tag-row">
+      {% for other in folders %}
+        {% if other.pk != folder.pk %}<a class="tag" href="{{ other.get_absolute_url }}" style="text-decoration:none">{{ other.name }}</a>{% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

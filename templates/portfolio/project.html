@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load newsroom %}
+
+{% block title %}{{ project.title }} — {{ profile.full_name }}{% endblock %}
+{% block description %}{{ project.summary }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <nav class="breadcrumb">
+    <a href="{% url 'portfolio:index' %}">Portfolio</a>
+    {% if project.folder %}<span>/</span> <a href="{{ project.folder.get_absolute_url }}">{{ project.folder.name }}</a>{% endif %}
+    <span>/</span> <span>{{ project.title }}</span>
+  </nav>
+
+  <article class="article">
+    <header class="article__head">
+      <p class="kicker kicker--accent">{{ project.folder.name|default:"Loyiha" }}</p>
+      <h1 class="article__title">{{ project.title }}</h1>
+      {% if project.summary %}<p class="lede">{{ project.summary }}</p>{% endif %}
+      <div class="article__meta">
+        {% if project.year %}<span>{{ project.year }}</span>{% endif %}
+        {% if project.role %}<span>{{ project.role }}</span>{% endif %}
+        <span>{{ project.get_status_display }}</span>
+        {% if not project.is_published %}<span class="stamp">Qoralama</span>{% endif %}
+        {% if can_edit %}<a class="edit-chip" href="{% url 'manage:project_update' project.pk %}">Tahrirlash</a>{% endif %}
+      </div>
+    </header>
+
+    {% if project.cover %}
+      <figure class="article__cover">
+        <img src="{{ project.cover.url }}" alt="{{ project.title }}">
+      </figure>
+    {% endif %}
+
+    {% if project.client or project.tech_list or project.live_url or project.repo_url %}
+      <dl class="project-facts">
+        {% if project.client %}<div><dt>Buyurtmachi</dt><dd>{{ project.client }}</dd></div>{% endif %}
+        {% if project.role %}<div><dt>Rolim</dt><dd>{{ project.role }}</dd></div>{% endif %}
+        {% if project.tech_list %}
+          <div><dt>Texnologiyalar</dt><dd>{{ project.tech_list|join:", " }}</dd></div>
+        {% endif %}
+        {% if project.live_url or project.repo_url %}
+          <div><dt>Havolalar</dt><dd>
+            {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" rel="noopener">Sayt</a>{% endif %}
+            {% if project.live_url and project.repo_url %} · {% endif %}
+            {% if project.repo_url %}<a href="{{ project.repo_url }}" target="_blank" rel="noopener">Kod</a>{% endif %}
+          </dd></div>
+        {% endif %}
+      </dl>
+    {% endif %}
+
+    {% if project.body %}
+      <div class="prose">{{ project.body|richtext }}</div>
+    {% else %}
+      <div class="prose">
+        <div class="empty-state">
+          <p>Bu loyiha haqida hali batafsil yozilmagan.</p>
+          {% if can_edit %}<a class="btn btn--primary" href="{% url 'manage:project_update' project.pk %}">Matn yozish</a>{% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if images %}
+      <div class="gallery">
+        {% for image in images %}
+          <figure>
+            <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+            {% if image.caption %}<figcaption>{{ image.caption }}</figcaption>{% endif %}
+          </figure>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if project.live_url or project.repo_url %}
+      <div style="display:flex;gap:.75rem;justify-content:center;margin-top:3rem;flex-wrap:wrap">
+        {% if project.live_url %}<a class="btn btn--primary" href="{{ project.live_url }}" target="_blank" rel="noopener">Loyihani ochish</a>{% endif %}
+        {% if project.repo_url %}<a class="btn" href="{{ project.repo_url }}" target="_blank" rel="noopener">Kodni ko'rish</a>{% endif %}
+      </div>
+    {% endif %}
+  </article>
+
+  {% if siblings %}
+    <section style="margin-top:4.5rem">
+      <div class="section-head">
+        <h2>Yana shu papkadan</h2>
+        {% if project.folder %}<span class="meta"><a href="{{ project.folder.get_absolute_url }}">{{ project.folder.name }} →</a></span>{% endif %}
+      </div>
+      <div class="filelist">
+        {% for project in siblings %}{% include "portfolio/_file_row.html" %}{% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

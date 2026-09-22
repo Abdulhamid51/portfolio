@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Boshqaruv paneli{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <p class="kicker kicker--accent">Boshqaruv</p>
+      <h1>Boshqaruv paneli</h1>
+      <p>Sahifadagi har bir bo'limni shu yerdan yoki to'g'ridan-to'g'ri sahifaning o'zidan tahrirlashingiz mumkin.</p>
+    </div>
+    <div class="page-head__actions">
+      <a class="btn btn--sm" href="{% url 'manage:profile' %}">Profil</a>
+      <a class="btn btn--sm btn--primary" href="{% url 'manage:project_create' %}">+ Loyiha</a>
+      <a class="btn btn--sm" href="{% url 'manage:messages' %}">Xabarlar{% if unread %} ({{ unread }}){% endif %}</a>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+
+    <section class="panel" id="portfolio">
+      <h2>Loyihalar <a class="edit-chip" href="{% url 'manage:project_create' %}">+ yangi</a></h2>
+      <ul>
+        {% for project in projects %}
+          <li>
+            <span><a href="{{ project.get_absolute_url }}" style="text-decoration:none">{{ project.title }}</a>
+              <span class="meta"> · {{ project.folder.name|default:"papkasiz" }}</span>
+              {% if not project.is_published %}<span class="stamp">qoralama</span>{% endif %}
+            </span>
+            <a class="edit-chip" href="{% url 'manage:project_update' project.pk %}">tahrir</a>
+          </li>
+        {% empty %}<li class="empty">Loyiha yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="papka">
+      <h2>Papkalar <a class="edit-chip" href="{% url 'manage:folder_create' %}">+ yangi</a></h2>
+      <ul>
+        {% for folder in folders %}
+          <li>
+            <span><a href="{{ folder.get_absolute_url }}" style="text-decoration:none">{{ folder.name }}</a>
+              <span class="meta"> · {{ folder.projects.count }} ta</span></span>
+            <a class="edit-chip" href="{% url 'manage:folder_update' folder.pk %}">tahrir</a>
+          </li>
+        {% empty %}<li class="empty">Papka yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="maqola">
+      <h2>Maqolalar <a class="edit-chip" href="{% url 'manage:article_create' %}">+ yangi</a></h2>
+      <ul>
+        {% for article in articles %}
+          <li>
+            <span><a href="{{ article.get_absolute_url }}" style="text-decoration:none">{{ article.title }}</a>
+              <span class="meta"> · {{ article.published_at|date:"d.m.Y" }}</span>
+              {% if not article.is_published %}<span class="stamp">qoralama</span>{% endif %}
+            </span>
+            <a class="edit-chip" href="{% url 'manage:article_update' article.pk %}">tahrir</a>
+          </li>
+        {% empty %}<li class="empty">Maqola yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="slayder">
+      <h2>Bosh sahifa slayderi <a class="edit-chip" href="{% url 'manage:section_create' 'slayd' %}">+ yangi</a></h2>
+      <ul>
+        {% for slide in slides %}
+          <li>
+            <span>{{ slide.title }}
+              {% if slide.url %}<span class="meta"> · {{ slide.url|truncatechars:30 }}</span>{% endif %}
+              {% if not slide.is_active %}<span class="stamp">yashirin</span>{% endif %}
+            </span>
+            <a class="edit-chip" href="{% url 'manage:section_update' 'slayd' slide.pk %}">tahrir</a>
+          </li>
+        {% empty %}<li class="empty">Slayd yo'q. Rasm, sarlavha va havola qo'shing.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="tajriba">
+      <h2>Ish tajribasi <a class="edit-chip" href="{% url 'manage:section_create' 'tajriba' %}">+ yangi</a></h2>
+      <ul>
+        {% for exp in experiences %}
+          <li><span>{{ exp.role }} <span class="meta">· {{ exp.company }}</span></span>
+            <a class="edit-chip" href="{% url 'manage:section_update' 'tajriba' exp.pk %}">tahrir</a></li>
+        {% empty %}<li class="empty">Yozuv yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="talim">
+      <h2>Ta'lim <a class="edit-chip" href="{% url 'manage:section_create' 'talim' %}">+ yangi</a></h2>
+      <ul>
+        {% for edu in educations %}
+          <li><span>{{ edu.degree }} <span class="meta">· {{ edu.institution }}</span></span>
+            <a class="edit-chip" href="{% url 'manage:section_update' 'talim' edu.pk %}">tahrir</a></li>
+        {% empty %}<li class="empty">Yozuv yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="konikma">
+      <h2>Ko'nikmalar
+        <span>
+          <a class="edit-chip" href="{% url 'manage:section_create' 'konikma-guruhi' %}">+ guruh</a>
+          <a class="edit-chip" href="{% url 'manage:section_create' 'konikma' %}">+ ko'nikma</a>
+        </span>
+      </h2>
+      <ul>
+        {% for group in skill_groups %}
+          <li>
+            <span><b>{{ group.name }}</b>
+              <span class="meta">{% for skill in group.skills.all %}{{ skill.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></span>
+            <a class="edit-chip" href="{% url 'manage:section_update' 'konikma-guruhi' group.pk %}">tahrir</a>
+          </li>
+        {% empty %}<li class="empty">Guruh yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="yutuq">
+      <h2>Yutuqlar <a class="edit-chip" href="{% url 'manage:section_create' 'yutuq' %}">+ yangi</a></h2>
+      <ul>
+        {% for award in awards %}
+          <li><span>{{ award.title }} <span class="meta">· {{ award.issuer }}</span></span>
+            <a class="edit-chip" href="{% url 'manage:section_update' 'yutuq' award.pk %}">tahrir</a></li>
+        {% empty %}<li class="empty">Yozuv yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="til">
+      <h2>Tillar <a class="edit-chip" href="{% url 'manage:section_create' 'til' %}">+ yangi</a></h2>
+      <ul>
+        {% for lang in languages %}
+          <li><span>{{ lang.name }} <span class="meta">· {{ lang.level }}</span></span>
+            <a class="edit-chip" href="{% url 'manage:section_update' 'til' lang.pk %}">tahrir</a></li>
+        {% empty %}<li class="empty">Yozuv yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="havola">
+      <h2>Ijtimoiy havolalar <a class="edit-chip" href="{% url 'manage:section_create' 'havola' %}">+ yangi</a></h2>
+      <ul>
+        {% for link in social_links %}
+          <li><span>{{ link.label }} <span class="meta">· {{ link.handle|default:link.url }}</span></span>
+            <a class="edit-chip" href="{% url 'manage:section_update' 'havola' link.pk %}">tahrir</a></li>
+        {% empty %}<li class="empty">Havola yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel" id="xatlar">
+      <h2>So'nggi xabarlar <a class="edit-chip" href="{% url 'manage:messages' %}">barchasi</a></h2>
+      <ul>
+        {% for letter in messages_list %}
+          <li><span>{% if not letter.is_read %}<b>{% endif %}{{ letter.name }}{% if not letter.is_read %}</b>{% endif %}
+            <span class="meta">· {{ letter.subject|default:letter.body|truncatechars:34 }}</span></span>
+            <span class="meta">{{ letter.created_at|date:"d.m.Y" }}</span></li>
+        {% empty %}<li class="empty">Xabar yo'q.</li>{% endfor %}
+      </ul>
+    </section>
+
+  </div>
+</div>
+{% endblock %}

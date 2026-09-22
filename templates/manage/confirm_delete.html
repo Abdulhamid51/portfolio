@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}O'chirish — {{ what }}{% endblock %}
+
+{% block content %}
+<div class="page form-page" style="max-width:620px">
+  <div class="page-head" style="padding-bottom:1.25rem">
+    <div>
+      <p class="kicker kicker--accent">Diqqat</p>
+      <h1>O'chirilsinmi?</h1>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <p class="kicker">{{ what }}</p>
+    <p style="font-family:var(--font-display);font-size:1.4rem">{{ object }}</p>
+    <p class="help">{{ note|default:"Bu amalni orqaga qaytarib bo'lmaydi." }}</p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-actions">
+        <button type="submit" class="btn btn--danger">Ha, o'chirilsin</button>
+        <a class="btn btn--ghost" href="{{ cancel_url|default:'/manage/' }}">Bekor qilish</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

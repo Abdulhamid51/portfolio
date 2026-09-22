@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load newsroom %}
+
+{% block title %}Maqolalar — {{ profile.display_masthead }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <p class="kicker kicker--accent">Yozganlarim</p>
+      <h1>Maqolalar</h1>
+      <p>Ish jarayoni, texnik yechimlar va yo'l-yo'lakay o'rganganlarim haqida.</p>
+    </div>
+    <div class="page-head__actions">
+      <span class="meta">{{ total }} ta maqola</span>
+      {% if can_edit %}<a class="btn btn--sm btn--primary" href="{% url 'manage:article_create' %}">+ Maqola</a>{% endif %}
+    </div>
+  </div>
+
+  {% if lead_article %}
+    <a class="lead-article" href="{{ lead_article.get_absolute_url }}">
+      {% if lead_article.cover %}
+        <div class="lead-article__media"><img src="{{ lead_article.cover.url }}" alt="{{ lead_article.title }}"></div>
+      {% endif %}
+      <div class="lead-article__text">
+        <p class="kicker kicker--accent">{{ lead_article.rubric|default:"Maqola" }}</p>
+        <h2>{{ lead_article.title }}</h2>
+        {% if lead_article.lead %}<p class="lede">{{ lead_article.lead }}</p>{% endif %}
+        <p class="meta">{{ lead_article.published_at|uzdate }} · {{ lead_article.reading_minutes }} daqiqa o'qish
+          {% if not lead_article.is_published %} · <span class="stamp">Qoralama</span>{% endif %}</p>
+      </div>
+    </a>
+  {% endif %}
+
+  {% if articles %}
+    <div class="article-grid">
+      {% for article in articles %}
+        <a class="article-card" href="{{ article.get_absolute_url }}">
+          {% if article.cover %}
+            <div class="article-card__media"><img src="{{ article.cover.url }}" alt="{{ article.title }}"></div>
+          {% endif %}
+          <p class="kicker">{{ article.rubric|default:"Maqola" }}</p>
+          <h3>{{ article.title }}</h3>
+          {% if article.lead %}<p>{{ article.lead|truncatechars:120 }}</p>{% endif %}
+          <p class="meta">{{ article.published_at|uzdate }} · {{ article.reading_minutes }} daqiqa
+            {% if not article.is_published %} · <span class="stamp">Qoralama</span>{% endif %}</p>
+        </a>
+      {% endfor %}
+    </div>
+  {% elif not lead_article %}
+    <div class="empty-state">
+      <p>Hali maqola yozilmagan.</p>
+      {% if can_edit %}<a class="btn btn--primary" href="{% url 'manage:article_create' %}">Birinchi maqolani yozish</a>{% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

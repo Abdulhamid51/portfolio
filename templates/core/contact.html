@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load newsroom %}
+
+{% block title %}Aloqa — {{ profile.full_name }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <p class="kicker kicker--accent">Aloqa</p>
+      <h1>Bog'lanish</h1>
+      <p>Hamkorlik, ish taklifi yoki oddiy savol — bemalol yozing. Bog'lanish uchun
+         telefon raqam, Telegram username yoki e-pochta — qaysi biri qulay bo'lsa,
+         o'shani qoldiring.</p>
+    </div>
+    {% if profile.available_for_work %}<span class="stamp">Ish takliflariga ochiq</span>{% endif %}
+  </div>
+
+  <div class="frontpage" style="padding-top:0">
+    <form class="form-card" method="post" novalidate>
+      {% csrf_token %}
+      {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+      <div class="form-grid">
+        {% with field=form.name %}{% include "partials/field.html" %}{% endwith %}
+        {% with field=form.contact %}{% include "partials/field.html" %}{% endwith %}
+      </div>
+      {% with field=form.subject %}{% include "partials/field.html" %}{% endwith %}
+      {% with field=form.body %}{% include "partials/field.html" %}{% endwith %}
+      <div class="form-actions">
+        <button type="submit" class="btn btn--primary">Yuborish</button>
+      </div>
+    </form>
+
+    <aside class="frontpage__aside stack" style="--stack-gap:1.75rem">
+      <div class="factbox">
+        <p class="kicker">To'g'ridan-to'g'ri</p>
+        <dl>
+          {% if profile.email %}<dt>Pochta</dt><dd><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></dd>{% endif %}
+          {% if profile.phone %}<dt>Telefon</dt><dd><a href="tel:{{ profile.phone }}">{{ profile.phone }}</a></dd>{% endif %}
+          {% if profile.location %}<dt>Manzil</dt><dd>{{ profile.location }}</dd>{% endif %}
+          {% for link in social_links %}<dt>{{ link.label }}</dt><dd><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.handle|default:link.url }}</a></dd>{% endfor %}
+        </dl>
+      </div>
+      <div>
+        <p class="kicker">Javob muddati</p>
+        <p style="font-size:.95rem;color:var(--ink-2)">Odatda bir-ikki kun ichida javob beraman.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load newsroom %}
+
+{% block title %}Rezyume — {{ profile.full_name }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="resume">
+
+    <div class="resume__main">
+      <div class="section-head">
+        <h2>Ish tajribasi</h2>
+        <span class="meta">
+          {% if profile.resume_file %}<a href="{{ profile.resume_file.url }}" download>PDF</a> · {% endif %}
+          <button type="button" class="linklike" data-print>Chop etish</button>
+          {% if can_edit %} · <a class="edit-chip" href="{% url 'manage:section_create' 'tajriba' %}">+ Tajriba</a>{% endif %}
+        </span>
+      </div>
+
+      {% for exp in experiences %}
+        <article class="entry">
+          <div class="entry__top">
+            <div>
+              <h3 class="entry__role">{{ exp.role }}</h3>
+              <div class="entry__org">
+                {% if exp.company_url %}<a href="{{ exp.company_url }}" target="_blank" rel="noopener">{{ exp.company }}</a>{% else %}{{ exp.company }}{% endif %}
+                {% if exp.location %} · {{ exp.location }}{% endif %}
+              </div>
+            </div>
+            <div class="entry__period">
+              {{ exp.period }}
+              {% if can_edit %}<br><a class="edit-chip" href="{% url 'manage:section_update' 'tajriba' exp.pk %}">Tahrir</a>{% endif %}
+            </div>
+          </div>
+          {% if exp.description %}<div class="prose prose--compact entry__body" style="max-width:none">{{ exp.description|richtext }}</div>{% endif %}
+        </article>
+      {% empty %}
+        <div class="empty-state">
+          <p>Ish tajribasi hali kiritilmagan.</p>
+          {% if can_edit %}<a class="btn btn--primary" href="{% url 'manage:section_create' 'tajriba' %}">Tajriba qo'shish</a>{% endif %}
+        </div>
+      {% endfor %}
+
+      <section>
+        <div class="section-head">
+          <h2>Ta'lim</h2>
+          {% if can_edit %}<span class="meta"><a class="edit-chip" href="{% url 'manage:section_create' 'talim' %}">+ Ta'lim</a></span>{% endif %}
+        </div>
+        {% for edu in educations %}
+          <article class="entry">
+            <div class="entry__top">
+              <div>
+                <h3 class="entry__role">{{ edu.degree }}</h3>
+                <div class="entry__org">{{ edu.institution }}{% if edu.location %} · {{ edu.location }}{% endif %}</div>
+              </div>
+              <div class="entry__period">
+                {{ edu.period }}
+                {% if can_edit %}<br><a class="edit-chip" href="{% url 'manage:section_update' 'talim' edu.pk %}">Tahrir</a>{% endif %}
+              </div>
+            </div>
+            {% if edu.description %}<div class="prose prose--compact entry__body" style="max-width:none">{{ edu.description|richtext }}</div>{% endif %}
+          </article>
+        {% empty %}
+          <p class="meta">Yozuv yo'q.</p>
+        {% endfor %}
+      </section>
+
+      {% if awards or can_edit %}
+      <section>
+        <div class="section-head">
+          <h2>Yutuq va sertifikatlar</h2>
+          {% if can_edit %}<span class="meta"><a class="edit-chip" href="{% url 'manage:section_create' 'yutuq' %}">+ Yutuq</a></span>{% endif %}
+        </div>
+        {% for award in awards %}
+          <article class="entry">
+            <div class="entry__top">
+              <div>
+                <h3 class="entry__role" style="font-size:1.1rem">
+                  {% if award.url %}<a href="{{ award.url }}" target="_blank" rel="noopener">{{ award.title }}</a>{% else %}{{ award.title }}{% endif %}
+                </h3>
+                <div class="entry__org">{{ award.issuer }}</div>
+              </div>
+              <div class="entry__period">
+                {% if award.date %}{{ award.date|uzdate:"short" }}{% endif %}
+                {% if can_edit %}<br><a class="edit-chip" href="{% url 'manage:section_update' 'yutuq' award.pk %}">Tahrir</a>{% endif %}
+              </div>
+            </div>
+            {% if award.description %}<p style="margin-top:.6rem;font-size:.95rem;color:var(--ink-2)">{{ award.description }}</p>{% endif %}
+          </article>
+        {% empty %}
+          <p class="meta">Yozuv yo'q.</p>
+        {% endfor %}
+      </section>
+      {% endif %}
+    </div>
+
+    <aside class="resume__aside stack" style="--stack-gap:2.25rem">
+      <div class="factbox">
+        <p class="kicker">Aloqa</p>
+        <dl>
+          {% if profile.email %}<dt>Pochta</dt><dd><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></dd>{% endif %}
+          {% if profile.phone %}<dt>Telefon</dt><dd>{{ profile.phone }}</dd>{% endif %}
+          {% if profile.location %}<dt>Manzil</dt><dd>{{ profile.location }}</dd>{% endif %}
+          {% if profile.website %}<dt>Sayt</dt><dd><a href="{{ profile.website }}" target="_blank" rel="noopener">{{ profile.website }}</a></dd>{% endif %}
+        </dl>
+      </div>
+
+      <div>
+        <div class="section-head" style="border-bottom-width:1px">
+          <h2 style="font-size:1.1rem">Ko'nikmalar</h2>
+          {% if can_edit %}<span class="meta"><a class="edit-chip" href="{% url 'manage:section_create' 'konikma' %}">+</a></span>{% endif %}
+        </div>
+        {% for group in skill_groups %}
+          <div class="skill-group">
+            <h3>{{ group.name }}
+              {% if can_edit %}<a class="edit-chip" href="{% url 'manage:section_update' 'konikma-guruhi' group.pk %}">tahrir</a>{% endif %}
+            </h3>
+            <ul class="skill-list">
+              {% for skill in group.skills.all %}
+                <li class="tag" {% if skill.note %}title="{{ skill.note }}"{% endif %}>
+                  {% if can_edit %}<a href="{% url 'manage:section_update' 'konikma' skill.pk %}" style="text-decoration:none">{{ skill.name }}</a>{% else %}{{ skill.name }}{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% empty %}
+          <p class="meta">Ko'nikma kiritilmagan.</p>
+        {% endfor %}
+      </div>
+
+      {% if languages or can_edit %}
+      <div>
+        <div class="section-head" style="border-bottom-width:1px">
+          <h2 style="font-size:1.1rem">Tillar</h2>
+          {% if can_edit %}<span class="meta"><a class="edit-chip" href="{% url 'manage:section_create' 'til' %}">+</a></span>{% endif %}
+        </div>
+        <ul class="leaders">
+          {% for lang in languages %}
+            <li>
+              <span>{% if can_edit %}<a href="{% url 'manage:section_update' 'til' lang.pk %}" style="text-decoration:none">{{ lang.name }}</a>{% else %}{{ lang.name }}{% endif %}</span>
+              <span>{{ lang.level }}</span>
+            </li>
+          {% empty %}
+            <li><span class="meta">Yozuv yo'q.</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <div>
+        <p class="kicker">Portfolio</p>
+        <p style="font-size:.95rem;color:var(--ink-2)">Loyihalar papkalar bo'yicha tartiblangan.</p>
+        <a class="btn btn--sm" href="{% url 'portfolio:index' %}">Papkalarni ochish</a>
+      </div>
+    </aside>
+
+  </div>
+</div>
+{% endblock %}

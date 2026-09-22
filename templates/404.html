@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Sahifa topilmadi — {{ profile.display_masthead }}{% endblock %}
+
+{% block content %}
+<div class="page page--narrow">
+  <div class="error-page">
+    <p class="error-page__code">404</p>
+    <h1>Bunday sahifa yo'q</h1>
+    <p>Havola eskirgan yoki manzil noto'g'ri yozilgan bo'lishi mumkin.</p>
+    <div class="error-page__actions">
+      <a class="btn btn--primary" href="{% url 'core:home' %}">Bosh sahifa</a>
+      <a class="btn" href="{% url 'portfolio:index' %}">Portfolio</a>
+      <a class="btn" href="{% url 'blog:index' %}">Maqolalar</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Kirish — {{ profile.display_masthead }}{% endblock %}
+
+{% block content %}
+<div class="page form-page" style="max-width:480px">
+  <div class="page-head" style="padding-bottom:1.25rem;border-bottom:0;margin-bottom:1.25rem">
+    <div>
+      <p class="kicker kicker--accent">Boshqaruv</p>
+      <h1>Kirish</h1>
+      <p>Kirgandan so'ng sahifalarning o'zida tahrirlash tugmalari paydo bo'ladi.</p>
+    </div>
+  </div>
+
+  <form class="form-card" method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="flash flash--error">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}{% include "partials/field.html" %}{% endfor %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">Kirish</button>
+      <a class="btn btn--ghost" href="{% url 'core:home' %}">Bosh sahifa</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

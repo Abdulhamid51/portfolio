@@ -1,0 +1,42 @@
+<div class="richtext{% if widget.compact %} richtext--compact{% endif %}" data-richtext
+     data-assist-url="{{ widget.assist_url }}">
+
+  {% if widget.assist %}
+    <div class="richtext__tabs" role="tablist">
+      <button type="button" class="richtext__tab is-active" role="tab"
+              aria-selected="true" data-tab="source">Asl matn</button>
+      <button type="button" class="richtext__tab" role="tab"
+              aria-selected="false" data-tab="clean" disabled>Tuzatilgan</button>
+      <button type="button" class="richtext__assist" data-assist>
+        <span class="richtext__spark" aria-hidden="true">✦</span>
+        <span data-assist-label>Imlo va formatni tuzatish</span>
+      </button>
+    </div>
+  {% endif %}
+
+  <div class="richtext__pane" data-pane="source">
+    <div class="richtext__editor" data-richtext-editor>{{ widget.value_html }}</div>
+  </div>
+
+  {% if widget.assist %}
+    <div class="richtext__pane" data-pane="clean" hidden>
+      <div class="richtext__result prose prose--compact" data-assist-result></div>
+      <div class="richtext__applybar">
+        <button type="button" class="btn btn--sm btn--primary" data-assist-apply>
+          Shu matnni qo'yish
+        </button>
+        <button type="button" class="btn btn--sm btn--ghost" data-assist-back>
+          Asl matnga qaytish
+        </button>
+        <span class="richtext__note" data-assist-note></span>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="richtext__foot">
+    <span data-richtext-count>0 so'z</span>
+    <span class="richtext__hint">Rasmni to'g'ridan-to'g'ri tashlab (drag &amp; drop) yoki qo'yib (paste) yuklash mumkin</span>
+  </div>
+
+  <textarea name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %} hidden data-richtext-source>{% if widget.value %}{{ widget.value }}{% endif %}</textarea>
+</div>
