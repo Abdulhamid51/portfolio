@@ -4,8 +4,8 @@
     {
       "name": "portfolio",
       "runtimeExecutable": ".venv/bin/python",
-      "runtimeArgs": ["manage.py", "runserver", "8931"],
-      "port": 8931
+      "runtimeArgs": ["manage.py", "runserver", "8090"],
+      "port": 8090
     }
   ]
 }
